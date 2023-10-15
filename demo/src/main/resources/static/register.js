@@ -40,7 +40,7 @@ async function register(event){
                     if (value==false){
                         console.log("usuario en uso");
                         document.querySelector('#username').classList.add('is-invalid');
-                        alert("Username in use");
+                        alert("Username or email in use");
                     }
                     else{
                         document.location="./login.html";
@@ -56,7 +56,7 @@ async function register(event){
         }
         else{
             document.querySelector('#password').classList.add('is-invalid');
-            alert("Password must contains upper case, lower case and numbers.");
+            alert("Password must contains upper case, lower case and numbers and should be at leat 8 characters long.");
         }
 
     }
@@ -77,4 +77,3 @@ var numbers = /[0-9]/g;
      return false;
   }
 }
-
