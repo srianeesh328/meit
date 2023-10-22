@@ -14,10 +14,12 @@
         <ul>
             <li>
                 <input type="text" value="Grocery List">
+                <button class="updateListButton">Update</button>
                 <button class="deleteListButton">Delete</button>
             </li>
             <li>
                 <input type="text" value="To-Do List">
+                <button class="updateListButton">Update</button>
                 <button class="deleteListButton">Delete</button>
             </li>
         </ul>
@@ -29,31 +31,44 @@
     <ul>
         <li>Create and manage multiple lists.</li>
         <li>Add or remove items from your lists with ease.</li>
+        <li>Update list names to keep your information up to date.</li>
         <li>Stay organized and keep track of your tasks and goals.</li>
     </ul>
 
     <p>Get started now and make your life more organized!</p>
 
     <script>
-        // Function to add a new list
         document.getElementById("addListButton").addEventListener("click", function () {
             var listContainer = document.getElementById("lists");
             var newList = document.createElement("li");
-            newList.innerHTML = '<input type="text" value="New List"><button class="deleteListButton">Delete</button>';
+            newList.innerHTML = '<input type="text" value="New List"><button class="updateListButton">Update</button><button class="deleteListButton">Delete</button>';
             listContainer.querySelector("ul").appendChild(newList);
-
-            // Reattach the delete button event listener
+            attachUpdateButtonEvent(newList.querySelector('.updateListButton'));
             attachDeleteButtonEvent(newList.querySelector('.deleteListButton'));
         });
 
-        // Function to delete a list
-        function attachDeleteButtonEvent(button) {
+        function attachUpdateButtonEvent(button) {
             button.addEventListener("click", function () {
-                button.parentNode.remove();
+                var listItem = button.parentElement;
+                var inputElement = listItem.querySelector('input');
+                var currentName = inputElement.value;
+                var newName = prompt("Update the list name:", currentName);
+                if (newName !== null && newName.trim() !== "") {
+                    inputElement.value = newName;
+                }
             });
         }
 
-        // Attach delete button event listener to initial list items
+        function attachDeleteButtonEvent(button) {
+            button.addEventListener("click", function () {
+                button.parentElement.remove();
+            });
+        }
+
+        document.querySelectorAll(".updateListButton").forEach(function (button) {
+            attachUpdateButtonEvent(button);
+        });
+
         document.querySelectorAll(".deleteListButton").forEach(function (button) {
             attachDeleteButtonEvent(button);
         });
