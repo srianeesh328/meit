@@ -18,6 +18,7 @@ async function register(event){
     if(validation() && document.getElementById('password').value.trim()==document.getElementById('passwordRep').value.trim()){
         var user=document.getElementById('username').value.trim();
             var pass=document.getElementById('password').value.trim();
+            var em=document.getElementById('email').value.trim();
 
             let res= await fetch("/register",{
                 method: 'POST',
@@ -28,7 +29,8 @@ async function register(event){
                 body:
                     JSON.stringify({
                      username: user,
-                     password: pass})
+                     password: pass,
+                     email: em})
             });
 
             if (res.status ==200){
@@ -77,3 +79,4 @@ var numbers = /[0-9]/g;
      return false;
   }
 }
+
