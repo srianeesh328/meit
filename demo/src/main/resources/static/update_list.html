@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Lists</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>User Lists</h1>
+
+    <button id="addListButton">Add List</button>
+    
+    <div id="lists">
+        <ul>
+            <li>
+                <input type="text" value="Grocery List">
+                <button class="deleteListButton">Delete</button>
+            </li>
+            <li>
+                <input type="text" value="To-Do List">
+                <button class="deleteListButton">Delete</button>
+            </li>
+        </ul>
+    </div>
+
+    <p>Manage your lists and stay organized with our user-friendly list manager.</p>
+
+    <h2>Features:</h2>
+    <ul>
+        <li>Create and manage multiple lists.</li>
+        <li>Add or remove items from your lists with ease.</li>
+        <li>Stay organized and keep track of your tasks and goals.</li>
+    </ul>
+
+    <p>Get started now and make your life more organized!</p>
+
+    <script>
+        // Function to add a new list
+        document.getElementById("addListButton").addEventListener("click", function () {
+            var listContainer = document.getElementById("lists");
+            var newList = document.createElement("li");
+            newList.innerHTML = '<input type="text" value="New List"><button class="deleteListButton">Delete</button>';
+            listContainer.querySelector("ul").appendChild(newList);
+
+            // Reattach the delete button event listener
+            attachDeleteButtonEvent(newList.querySelector('.deleteListButton'));
+        });
+
+        // Function to delete a list
+        function attachDeleteButtonEvent(button) {
+            button.addEventListener("click", function () {
+                button.parentNode.remove();
+            });
+        }
+
+        // Attach delete button event listener to initial list items
+        document.querySelectorAll(".deleteListButton").forEach(function (button) {
+            attachDeleteButtonEvent(button);
+        });
+    </script>
+</body>
+</html>
