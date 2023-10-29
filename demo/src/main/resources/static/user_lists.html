@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trabajo Iñigo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.3.2/css/mdb.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.3.2/js/mdb.min.js"></script>
+    <style>
+        /* Your existing CSS styles here */
+
+        /* Additional styles for the stars, completed buttons, and save button */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .star {
+            cursor: pointer;
+        }
+
+        .completed-button {
+            margin-left: auto;
+            cursor: pointer;
+            display: none; /* Hidden by default */
+        }
+
+        .past-button {
+            cursor: pointer;
+        }
+
+        .past-item {
+            opacity: 0.5; /* Apply opacity to distinguish past items */
+        }
+
+        .save-button {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!-- The star at the top to toggle stars for list items -->
+<button style="position: relative; left: 1150px;" id="toggle-stars">&#9734;*</button>
+<div id="mySidenav" class="sidenav">
+    <!-- Your navigation links here -->
+</div>
+<span style="font-size:30px; cursor:pointer" onclick="openNav()">&#9776;</span>
+<a href="favorites.html">Favorite Page</a>
+<button id="pre-made-lists" onclick="openPreMadeListsPage()">Pre-Made Lists</button>
+<!-- Moved the "Toggle Past Items" button next to "Pre-Made Lists" button -->
+<button id="toggle-past" onclick="togglePastItems()">Toggle Past Items</button>
+<section class="vh-100" style="background-color: #882ec7;">
+    <div class="container h-100 animated fadeIn">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-12 col-xl-11">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="card-body p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-1">
+                                <!-- Existing content here -->
+                            </div>
+                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-2">
+                                <p class="animated fadeInDown text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">My Lists</p>
+                                <div class="box">
+                                    <div class="box2">
+                                        <div class="box3">
+                                            <!-- Updated the "importList" function to import items here -->
+                                            <details class="list-item">
+                                                <summary>List 1</summary>
+                                                <b>
+                                                    <div class="star" onclick="toggleFavorite('item1')">&#9734;</div>
+                                                    <div class="completed-button" onclick="toggleCompleted('item1')">Completed</div>
+                                                    <div class="past-button" onclick="togglePast('item1')">Past</div>
+                                                    <input type="text" id="item1" name="item1" value="Item 1" class="list" contenteditable="true">
+                                                    <div class="star" onclick="toggleFavorite('item1')">&#9734;</div>
+                                                </b>
+                                            </details>
+                                            <br>
+                                            <details class="list-item past-item">
+                                                <summary>List 2 (Past)</summary>
+                                                <b>
+                                                    <div class="star" onclick="toggleFavorite('item4')">&#9734;</div>
+                                                    <div class="completed-button" onclick="toggleCompleted('item4')">Completed</div>
+                                                    <div class="past-button" onclick="togglePast('item4')">Past</div>
+                                                    <input type="text" id="item4" name="item4" value="Item 1 (Past)" class="list" contenteditable="true">
+                                                    <div class="star" onclick="toggleFavorite('item4')">&#9734;</div>
+                                                </b>
+                                            </details>
+                                            <br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    let showPastItems = true; // Initially, past items are shown
+
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+
+    const toggleStarsButton = document.getElementById("toggle-stars");
+    const listItems = document.querySelectorAll(".list-item .star");
+    const completedButtons = document.querySelectorAll(".list-item .completed-button");
+    const pastButtons = document.querySelectorAll(".list-item .past-button"); // Added past buttons
+    const saveButtons = document.querySelectorAll(".save-button");
+    let favorites = [];
+
+    toggleStarsButton.addEventListener("click", () => {
+        listItems.forEach(star => {
+            star.style.display = star.style.display === "none" ? "inline" : "none";
+        });
+    });
+
+    function toggleFavorite(itemId) {
+        const itemInput = document.getElementById(itemId);
+        const star = itemInput.previousElementSibling;
+
+        if (!favorites.includes(itemId)) {
+            favorites.push(itemId);
+            star.style.display = "inline";
+            const saveButton = itemInput.nextElementSibling.nextElementSibling.nextElementSibling; // Adjusted for completed button and past button
+            saveButton.style.display = "inline";
+        } else {
+            const index = favorites.indexOf(itemId);
+            favorites.splice(index, 1);
+            star.style.display = "none";
+            const saveButton = itemInput.nextElementSibling.nextElementSibling.nextElementSibling; // Adjusted for completed button and past button
+            saveButton.style.display = "none";
+        }
+    }
+
+    function toggleCompleted(itemId) {
+        const completedButton = document.querySelector(`#${itemId} + .completed-button`);
+        if (completedButton) {
+            completedButton.style.display = completedButton.style.display === "none" ? "inline" : "none";
+        }
+    }
+
+    function togglePast(itemId) {
+        const pastButton = document.querySelector(`#${itemId} + .past-button`);
+        const listItem = document.querySelector(`#${itemId}`).parentElement;
+        if (pastButton) {
+            if (pastButton.innerText === "Past") {
+                pastButton.innerText = "Not Past";
+                listItem.classList.remove("past-item");
+            } else {
+                pastButton.innerText = "Past";
+                listItem.classList.add("past-item");
+            }
+        }
+    }
+
+    function saveItem(itemId) {
+        const itemInput = document.getElementById(itemId);
+        // You can save the edited item here (e.g., to localStorage)
+        // For example, to save it to localStorage:
+        localStorage.setItem(itemId, itemInput.innerText);
+    }
+
+    // Function to open the Pre-Made Lists page
+    function openPreMadeListsPage() {
+        // Redirect to the pre-made lists page (you need to create this page)
+        window.location.href = "premadelist.html";
+    }
+
+    function togglePastItems() {
+        showPastItems = !showPastItems;
+        const pastItems = document.querySelectorAll(".past-item");
+        pastItems.forEach(pastItem => {
+            pastItem.style.display = showPastItems ? "block" : "none";
+        });
+    }
+
+    // Restore the saved text in the text boxes on page load
+    for (let i = 1; i <= 6; i++) {
+        const itemInput = document.getElementById('item' + i);
+        const savedText = localStorage.getItem('item' + i);
+        if (savedText !== null) {
+            itemInput.innerText = savedText;
+        }
+    }
+</script>
+</body>
+</html>
