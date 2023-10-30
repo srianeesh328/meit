@@ -1,4 +1,4 @@
-'use strict';
+'use strict';                                            #intentar entener el codigo 
 function menuroommates(event){
     event.preventDefault();
     document.location.href="/roommate.html";
