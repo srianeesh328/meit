@@ -2,61 +2,203 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Lists</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Trabajo Iñigo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        /* Your existing CSS styles here */
+
+        /* Additional styles for the stars, save button, and pin button */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: opacity 0.5s; /* Add a CSS transition for smooth fading */
+        }
+
+        .list-item.fade {
+            opacity: 0.5; /* Apply opacity to distinguish past items */
+        }
+
+        .star {
+            cursor: pointer;
+            display: none;
+        }
+
+        .star-active {
+            display: inline;
+        }
+
+        .pin-button {
+            cursor: pointer;
+        }
+
+        .save-button {
+            display: none;
+        }
+
+        .pin-button.hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>User Lists</h1>
-
-    <button id="addListButton">Add List</button>
-    
-    <div id="lists">
-        <ul>
-            <li>
-                <input type="text" value="Grocery List">
-                <button class="deleteListButton">Delete</button>
-            </li>
-            <li>
-                <input type="text" value="To-Do List">
-                <button class="deleteListButton">Delete</button>
-            </li>
-        </ul>
+    <!-- The star at the top to toggle stars for list items -->
+    <button style="position: relative; left: 1150px;" id="toggle-stars">&#9734;*</button>
+    <div id="mySidenav" class="sidenav">
+        <!-- Your navigation links here -->
     </div>
-
-    <p>Manage your lists and stay organized with our user-friendly list manager.</p>
-
-    <h2>Features:</h2>
-    <ul>
-        <li>Create and manage multiple lists.</li>
-        <li>Add or remove items from your lists with ease.</li>
-        <li>Stay organized and keep track of your tasks and goals.</li>
-    </ul>
-
-    <p>Get started now and make your life more organized!</p>
-
+    <span style="font-size:30px; cursor:pointer" onclick="openNav()">&#9776;</span>
+    <a href="favorites.html">Favorite Page</a>
+    <button id="pre-made-lists" onclick="openPreMadeListsPage()">Pre-Made Lists</button>
+    <!-- Moved the "Toggle Past Items" button next to "Pre-Made Lists" button -->
+    <button id="toggle-past" onclick="togglePastItems()">Toggle Past Items</button>
+    <button id="insert-list" onclick="insertNewList()">Insert</button>
+    <button id="delete-list" onclick="deleteLastList()">Delete</button>
+    <section class="vh-100" style="background-color: #882ec7;">
+        <div class="container h-100 animated fadeIn">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-lg-12 col-xl-11">
+                    <div class="card text-black" style="border-radius: 25px;">
+                        <div class="card-body p-md-5">
+                            <div class="row justify-content-center">
+                                <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-1">
+                                    <!-- Existing content here -->
+                                </div>
+                                <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-2">
+                                    <p class="animated fadeInDown text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">My Lists</p>
+                                    <div class="box">
+                                        <div class="box2">
+                                            <div class="box3" id="lists-container">
+                                                <!-- Existing list items go here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <script>
-        // Function to add a new list
-        document.getElementById("addListButton").addEventListener("click", function () {
-            var listContainer = document.getElementById("lists");
-            var newList = document.createElement("li");
-            newList.innerHTML = '<input type="text" value="New List"><button class="deleteListButton">Delete</button>';
-            listContainer.querySelector("ul").appendChild(newList);
+        let showPastItems = true; // Initially, past items are shown
 
-            // Reattach the delete button event listener
-            attachDeleteButtonEvent(newList.querySelector('.deleteListButton'));
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+
+        const toggleStarsButton = document.getElementById("toggle-stars");
+        let itemIdCounter = 0;
+
+        toggleStarsButton.addEventListener("click", () => {
+            const listItems = document.querySelectorAll(".list-item .star");
+            listItems.forEach(star => {
+                star.classList.toggle("star-active");
+                const pinButton = star.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling;
+                pinButton.classList.toggle("hidden");
+            });
         });
 
-        // Function to delete a list
-        function attachDeleteButtonEvent(button) {
-            button.addEventListener("click", function () {
-                button.parentNode.remove();
+        function toggleFavorite(itemId) {
+            const star = document.getElementById(itemId).previousElementSibling;
+
+            star.classList.toggle("star-active");
+            const pinButton = star.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling;
+            pinButton.classList.toggle("hidden");
+        }
+
+        function togglePast(element, itemId) {
+            const listItem = document.querySelector(`#${itemId}`).parentElement;
+
+            if (element.innerText === "Past") {
+                element.innerText = "Not Past";
+                listItem.classList.remove("past-item");
+            } else {
+                element.innerText = "Past";
+                listItem.classList.add("past-item");
+            }
+        }
+
+        function togglePin(element, itemId) {
+            if (element.innerText === "Pin") {
+                element.innerText = "Unpin";
+                element.style.backgroundColor = "green"; // Change the button style
+                // You can add logic to handle pinning here
+            } else {
+                element.innerText = "Pin";
+                element.style.backgroundColor = "blue"; // Change the button style
+                // You can add logic to handle unpinning here
+            }
+        }
+
+        function toggleListItem(item) {
+            if (showPastItems || !item.classList.contains("past-item")) {
+                item.classList.toggle("fade");
+            }
+        }
+
+        function insertNewList() {
+            const newItemId = `item${itemIdCounter}`;
+            const newDetails = document.createElement("details");
+            newDetails.classList.add("list-item");
+            newDetails.onclick = function () {
+                toggleListItem(this);
+            };
+            newDetails.innerHTML = `
+                <div class="list-container">
+                    <div class="list-info">
+                        <input type="text" id="title${newItemId}" name="title${newItemId}" value="New List Title" class="list-title" contenteditable="true">
+                        <textarea id="description${newItemId}" name="description${newItemId}" class="list-description" placeholder="Description" contenteditable="true"></textarea>
+                    </div>
+                    <b>
+                        <div class="star" onclick="toggleFavorite('${newItemId}')">&#9734;</div>
+                        <div class="past-button" onclick="togglePast(this, '${newItemId}')">Past</div>
+                        <button class="pin-button hidden" onclick="togglePin(this, '${newItemId}')">Pin</button>
+                        <input type="text" id="${newItemId}" name="${newItemId}" value="New Item" class="list" contenteditable="true">
+                        <div class="simple-icon" onclick="togglePin(this, '${newItemId}')">X</div>
+                    </b>
+                </div>`;
+            document.getElementById("lists-container").appendChild(newDetails);
+            itemIdCounter++;
+        }
+
+        function deleteLastList() {
+            const lastList = document.querySelector(".list-item:last-child");
+            if (lastList) {
+                lastList.remove();
+            }
+        }
+
+        function openPreMadeListsPage() {
+            window.location.href = "premadelist.html";
+        }
+
+        function togglePastItems() {
+            showPastItems = !showPastItems;
+            const pastItems = document.querySelectorAll(".past-item");
+            pastItems.forEach(pastItem => {
+                pastItem.style.display = showPastItems ? "block" : "none";
             });
         }
 
-        // Attach delete button event listener to initial list items
-        document.querySelectorAll(".deleteListButton").forEach(function (button) {
-            attachDeleteButtonEvent(button);
-        });
+        // Restore the saved text in the text boxes on page load
+        for (let i = 0; i < itemIdCounter; i++) {
+            const titleInput = document.getElementById(`title${i}`);
+            const descriptionInput = document.getElementById(`description${i}`);
+            const savedTitle = localStorage.getItem(`title${i}`);
+            const savedDescription = localStorage.getItem(`description${i}`);
+            if (savedTitle !== null) {
+                titleInput.value = savedTitle;
+            }
+            if (savedDescription !== null) {
+                descriptionInput.value = savedDescription;
+            }
+        }
     </script>
 </body>
 </html>
