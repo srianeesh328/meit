@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Meit</title>
+    <script src="./about_us.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.3.2/css/mdb.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.3.2/js/mdb.min.js"></script>
+
+</head>
+<body>
+<style>
+    body {
+          font-family: "Lato", sans-serif;
+        }
+        
+      .sidenav {
+          height: 100%;
+          width: 0;
+          position: fixed;
+          z-index: 1;
+          top: 0;
+          left: 0;
+          background-color: #111;
+          overflow-x: hidden;
+          transition: 0.5s;
+          padding-top: 60px;
+        }
+        
+      .sidenav a {
+          padding: 8px 8px 8px 32px;
+          text-decoration: none;
+          font-size: 25px;
+          color: #818181;
+          display: block;
+          transition: 0.3s;
+        }
+        
+      .sidenav a:hover {
+          color: #f1f1f1;
+        }
+        
+      .sidenav .closebtn {
+          position: absolute;
+          top: 0;
+          right: 25px;
+          font-size: 36px;
+          margin-left: 50px;
+        }
+      
+      #side_content {
+          transition: margin-left .5s;
+          padding: 16px;
+        }
+        
+      @media screen and (max-height: 450px) {
+          .sidenav {padding-top: 15px;}
+          .sidenav a {font-size: 18px;}
+        }  
+      </style>
+         <div id="mySidenav" class="sidenav">
+          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <a href="./home.html">Home</a>
+          <a href="./profile.html">My Profile</a>
+          <a href="./roommate.html">Roommates</a>
+          <a href="./user_lists.html">Lists</a>
+          <a href="./account.html">Shared Account</a>
+          <a href="./about_us.html">About Us</a>
+          <a href="./faq.html">FAQ</a>
+          <a href="./news.html">News</a>
+          <a href="./index.html" onclick="logout()">Logout</a>
+            </div>
+            <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+
+<section class="vh-100" style="background-color: #882ec7;">
+    <div class="container h-100 animated fadeIn">
+                        <div class="row justify-content-center">
+                            <head>
+                                <title>List Creator</title>
+                            </head>
+                            <style>
+                                .pin-symbol::before {
+                                    content: "📌";
+                                    margin-right: 10px;
+                                }
+                                ul li {
+                                    cursor: pointer; /* Add cursor pointer for better UI */
+                                }
+                            </style>
+                            <body>
+                                <h1>Create and Pin Lists</h1>
+                            
+                                <input type="text" id="listName" placeholder="Enter list name">
+                                <button onclick="createList()">Create List</button>
+                            
+                                <ul id="lists">
+                                    <!-- Lists will be displayed here -->
+                                </ul>
+                            
+                                <input type="text" id="itemText" placeholder="Enter item text">
+                                <select id="listSelect">
+                                    <!-- Select created lists dynamically -->
+                                </select>
+                                <button onclick="addItemToList()">Add Item</button>
+                            
+                                <script>
+                                    function createList() {
+                                        var listName = document.getElementById("listName").value;
+                                        if (listName) {
+                                            var lists = document.getElementById("lists");
+                                            var newList = document.createElement("li");
+                                            newList.innerHTML = `<strong>${listName}</strong><button onclick="pinList(this)">Pin</button><ul id="${listName}"></ul>`;
+                                            lists.prepend(newList); // Add list to the beginning
+                            
+                                            var listSelect = document.getElementById("listSelect");
+                                            var option = document.createElement("option");
+                                            option.text = listName;
+                                            listSelect.add(option);
+                            
+                                            document.getElementById("listName").value = "";
+                                        }
+                                    }
+                            
+                                    function addItemToList() {
+                                        var listName = document.getElementById("listSelect").value;
+                                        var itemText = document.getElementById("itemText").value;
+                                        if (listName && itemText) {
+                                            var itemList = document.getElementById(listName);
+                                            var newItem = document.createElement("li");
+                                            newItem.innerHTML = `<strong>${itemText}</strong>`;
+                                            newItem.onclick = function () {
+                                                toggleItem(this);
+                                            };
+                                            itemList.appendChild(newItem);
+                            
+                                            document.getElementById("itemText").value = "";
+                                        }
+                                    }
+                            
+                                    function toggleItem(item) {
+                                        
+                                        if (itemText.style.textDecoration === "line-through") {
+                                            itemText.style.textDecoration = "none";
+                                        } else {
+                                            itemText.style.textDecoration = "line-through";
+                                        }
+                                    }
+                            
+                                    function pinList(button) {
+                                        var list = button.parentElement;
+                                        var lists = document.getElementById("lists");
+                                        lists.removeChild(list);
+                            
+                                        var listName = list.querySelector("strong").textContent;
+                                        var pinnedLists = document.getElementById("lists");
+                                        var pinnedList = document.createElement("li");
+                                        pinnedList.innerHTML = `<strong class="pin-symbol">${listName}</strong><button onclick="unpinList(this)">Unpin</button><ul id="${listName}"></ul>`;
+                                        pinnedLists.prepend(pinnedList);
+                                    }
+                            
+                                    function unpinList(button) {
+                                        var list = button.parentElement;
+                                        var pinnedLists = document.getElementById("lists");
+                                        pinnedLists.removeChild(list);
+                            
+                                        var listName = list.querySelector("strong").textContent;
+                                        var lists = document.getElementById("lists");
+                                        var newList = document.createElement("li");
+                                        newList.innerHTML = `<strong>${listName}</strong><button onclick="pinList(this)">Pin</button><ul id="${listName}"></ul>`;
+                                        lists.prepend(newList);
+                                    }
+                                </script>
+                            </body>
+        </div>
+        <script>
+            function openNav() {
+       document.getElementById("mySidenav").style.width = "250px";
+     }
+     
+    function closeNav() {
+       document.getElementById("mySidenav").style.width = "0";
+     }   
+           </script>
+    </div>
+</section>
+
+</body>
+</html>
+
+
+
+
