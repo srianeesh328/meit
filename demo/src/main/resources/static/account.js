@@ -85,6 +85,8 @@ window.onload=function testSecureEndpoint(){
     }
 }
 
+//to be able to log out
+
 function logout(){
     sessionStorage.clear();
 }
