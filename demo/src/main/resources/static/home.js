@@ -1,10 +1,10 @@
 'use strict';
 
-function menuroommates(event){
+function menuroommates(event){        //for roomates 
     event.preventDefault();
     document.location.href="/roommate.html";
 }
-function menulists(event){
+function menulists(event){        //for menu 
     event.preventDefault();
     document.location.href="/user_lists.html";
 }
